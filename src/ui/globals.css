@@ -1,0 +1,55 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+:root {
+
+  
+
+  --color-primary: oklch(15.907% 0.00002 271.152);
+  --color-secondary: oklch(1 0.0148 248);
+  --color-header: oklch(8.467% 0.00001 271.152 / 0.75);
+  --color-border: oklch(1 0.0148 248 / 0.5);
+  --color-table-border: oklch(1 0.0148 248 / 0.25);
+  --color-background: oklch(4% 0.00001 271.152);
+  --color-muted-background: oklch(24% 0.00001 271.152);
+ 
+  
+  --primary: var(--color-primary);
+  --secondary: var(--color-secondary);
+  --header: var(--color-header);
+  --border: var(--color-border);
+  --background: var(--color-background);
+  --muted-background: var(--color-muted-background);
+  --table-border: var(--color-table-border);
+
+  color: var(--secondary);
+  background-color: var(--primary);
+  scrollbar-color: var(--primary);
+
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+
+::-webkit-scrollbar-track {
+background-color: var(--muted-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 6px;
+  border: 1px solid var(--header);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--background);
+}
+

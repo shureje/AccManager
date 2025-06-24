@@ -1,0 +1,13 @@
+{
+    "appId": "com.zxsakurai.accmanager",
+    "files": ["dist-electron", "dist-react"],
+    "extraResources": ["dist-electron/preload.cjs"],
+    "linux": {
+        "target": "AppImage",
+        "category": "Utility"
+    },
+    "win": {
+        "target": ["portable", "msi"],
+        "icon": "./public/x.jpg"
+    }
+}
