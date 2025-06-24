@@ -14,7 +14,7 @@ function App() {
       <Container className='font-sans min-h-screen  flex flex-col'>
         <Menu className='sticky top-0 z-20 h-6'/>
         <Header className='sticky top-6 z-10'/>
-        <Container className='p-6 flex-1'>
+        <Container className='p-6 flex-1 mb-6'>
            <DataTable/>
         </Container>
         <Footer className='mt-auto'/>

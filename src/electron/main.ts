@@ -1,7 +1,9 @@
-import {app, BrowserWindow} from 'electron'
+import {app, BrowserWindow, ipcMain} from 'electron'
 import path from 'path'
 import { isDev } from './util.js';
 import { getPreloadPath } from './pathResolver.js';
+import './database.js';
+import { accountsDB } from './database.js';
 
 
 
@@ -31,4 +33,13 @@ app.on('ready', () => {
   mainWindow.show()
   })
   mainWindow.setTitle('FiatLocker');
+})
+
+ipcMain.handle('get-accounts', async() => {
+  try {
+    return await accountsDB.getAll();
+  } catch (error) {
+    console.error('Error fetching accounts:', error);
+    return [];
+  }
 })

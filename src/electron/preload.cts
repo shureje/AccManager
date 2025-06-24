@@ -1,6 +1,7 @@
+import { ipcRenderer } from "electron";
+
 const electron = require('electron');
 
-electron.contextBridge.exposeInMainWorld('electron', {
-    SubscribeStatistics: (callback: (statistics: any) => void) => callback({}),
-    getStaticData: () => console.log('static'),
+electron.contextBridge.exposeInMainWorld('electronAPI', {
+    getAccounts: () => ipcRenderer.invoke('get-accounts')
 })
