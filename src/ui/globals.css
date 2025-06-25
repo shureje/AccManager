@@ -53,3 +53,9 @@ background-color: var(--muted-background);
   background: var(--background);
 }
 
+/*На раздумье*/
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

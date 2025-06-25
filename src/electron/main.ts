@@ -3,7 +3,7 @@ import path from 'path'
 import { isDev } from './util.js';
 import { getPreloadPath } from './pathResolver.js';
 import './database.js';
-import { accountsDB } from './database.js';
+import { accountsDB, db } from './database.js';
 
 
 
@@ -41,5 +41,23 @@ ipcMain.handle('get-accounts', async() => {
   } catch (error) {
     console.error('Error fetching accounts:', error);
     return [];
+  }
+})
+
+ipcMain.handle('add-account', async(event, accountData) => {
+  try {
+    console.log('Received data:', accountData);
+    
+    // Проверяем что БД готова
+    if (!db) {
+      throw new Error('Database not initialized');
+    }
+    
+    const id = await accountsDB.createAccount(accountData);
+    console.log('Account created with ID:', id);
+    return { success: true, id };
+  } catch (error) {
+    console.error('Error adding account:', error);
+    return { success: false, error: error};
   }
 })

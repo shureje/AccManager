@@ -6,9 +6,11 @@ import Container from "./Contaiter";
 
 interface HeaderProps {
     className?: string;
+    onAddAccount?: () => void;
+
 }
 
-export default function Header({className}: HeaderProps) {
+export default function Header({className, onAddAccount}: HeaderProps) {
     return(
         <>
         <Container className={`${className}`}>
@@ -18,7 +20,7 @@ export default function Header({className}: HeaderProps) {
                     <input placeholder="Search" className="text-sm pl-2 py-[2px] bg-primary rounded-md border-[1px] border-border"/>
                 </div>
                
-                <Button className="ml-auto text-xs"><Plus size="16"/>ДОБАВИТЬ АККАУНТ</Button>
+                <Button onClick={onAddAccount} className="ml-auto text-xs"><Plus size="16"/>ДОБАВИТЬ АККАУНТ</Button>
             </div>
         </Container>
         </>

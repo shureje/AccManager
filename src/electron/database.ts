@@ -18,11 +18,11 @@ export interface Account {
 
 let db: sqlite3.Database;
 
+    const documents = app.getPath('documents');
+    const appFolder = path.join(documents, 'FiatLocker');
+    
 app.whenReady().then(() => {
     try {
-        const documents = app.getPath('documents');
-        const appFolder = path.join(documents, 'FiatLocker');
-
         if (!fs.existsSync(appFolder)) {
             fs.mkdirSync(appFolder, {recursive: true});
         }
@@ -61,7 +61,7 @@ app.whenReady().then(() => {
     }
 });
 
-export { db };
+
 
 function insertTestData() {
     const testAccounts = [
@@ -110,5 +110,47 @@ export const accountsDB = {
                 }
             });
         });
+    },
+
+    createAccount: (account: Omit<Account, 'id' | 'created_at' | 'updated_at'>): Promise<number> => {
+        return new Promise((resolve, reject) => {
+            
+            
+            const RequiredFields = ['login', 'password', 'nickname', 'email'];
+
+            for (const field of RequiredFields) {
+                if (!account[field as keyof typeof account]) {
+                    reject(new Error(`${field} is required`));
+                    return;
+                }
+            }
+            if (!account.pts) {
+                reject(new Error('Pts is required'));
+                return;
+            }
+            if (account.pts < 0 || account.pts > 20000) {
+                reject(new Error('Incorrect value'));
+                return;
+            }
+            
+
+            const statement = db.prepare(`
+                INSERT INTO accounts (login, password, nickname, pts, email, phone)
+                VALUES (?, ?, ?, ?, ?, ?)
+            `);
+
+            statement.run([account.login, account.password, account.nickname, account.pts, account.email, account.phone], 
+                function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(this.lastID);
+                }
+            });
+
+            statement.finalize();
+        }); 
     }
 };
+
+export { db };
