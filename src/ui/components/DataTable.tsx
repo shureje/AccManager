@@ -12,17 +12,37 @@ const columns = [
 
 interface DataTableProps {
     className?: string;
+    onRefresh?: (func: () => Promise<void>) => void;
+    searchQuery?: string;
 }
 
-export function DataTable({className} : DataTableProps) {
+export function DataTable({className, onRefresh, searchQuery} : DataTableProps) {
 
     const [data, setData] = useState<any[]>([]);
+    const [filtredData, setFiltredData] = useState<any[]>([])
 
     useEffect(()=> {
-        loadAccounts();
+        refreshAccounts();
+        
+        if (onRefresh) {
+            onRefresh(refreshAccounts);
+        }
     }, []);
 
-    const loadAccounts = async() => {
+    useEffect(() => {
+        if (!searchQuery) {
+            setFiltredData(data);
+        } else {
+            const filtreadData = data.filter(account =>
+                account.login.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                account.nickname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                account.email.toString().includes(searchQuery)
+            )
+            setFiltredData(filtreadData);
+        }
+    }, [searchQuery, data])
+
+    const refreshAccounts = async() => {
         try {
             const accounts = await window.electronAPI.getAccounts();
             setData(accounts);
@@ -32,7 +52,7 @@ export function DataTable({className} : DataTableProps) {
     }
 
     const table = useReactTable({
-        data,
+        data: filtredData,
         columns,
         getCoreRowModel: getCoreRowModel(),
     })

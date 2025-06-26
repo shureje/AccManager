@@ -115,8 +115,13 @@ export const accountsDB = {
     createAccount: (account: Omit<Account, 'id' | 'created_at' | 'updated_at'>): Promise<number> => {
         return new Promise((resolve, reject) => {
             
-            
+            {/*начало валидации*/}
             const RequiredFields = ['login', 'password', 'nickname', 'email'];
+
+            if (!account.login && !account.password && !account.email && !account.nickname && !account.pts) {
+                reject(new Error('Required fields are empry'));
+                return;
+            }
 
             for (const field of RequiredFields) {
                 if (!account[field as keyof typeof account]) {
@@ -133,6 +138,7 @@ export const accountsDB = {
                 return;
             }
             
+            {/*конец валидации*/}
 
             const statement = db.prepare(`
                 INSERT INTO accounts (login, password, nickname, pts, email, phone)

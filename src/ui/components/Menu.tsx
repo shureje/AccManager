@@ -11,7 +11,7 @@ export default function Header({className}: MenuProps) {
     const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
 
     const menuItems = [
-        {label: "Главная", submenu: [
+        {label: "Файл", submenu: [
             {label: "Открыть"},
             {label: "Экспорт"},
             {label: "Импорт"}     

@@ -13,6 +13,8 @@ function App() {
  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState('');
+  const [refreshTableFunction, setRefreshTableFunction] = useState<(() => Promise<void>) | null>(null)
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
       if (error) {
@@ -24,6 +26,14 @@ function App() {
       }
     }, [error]);
 
+  const handleTableRefresh = async (refreshFunc: () => Promise<void>) => {
+    setRefreshTableFunction(() => refreshFunc);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+    
   const handleCreateAccount = async (accountData: any) => {
     try {
       const result = await window.electronAPI.createAccount(accountData);
@@ -31,6 +41,9 @@ function App() {
         console.log('Account created successfully');
         setIsModalOpen(false);
         setError('');
+        if (refreshTableFunction) {
+          await refreshTableFunction();
+        }
       } else {
         console.log('Ошибка: ' + `${result.error}`);
         const cleanError = String(result.error).replace(/^Error:\s*/, '');
@@ -48,9 +61,10 @@ function App() {
     <Container>
         <Container className='font-sans min-h-screen  flex flex-col'>
           <Menu className='sticky top-0 z-[1000] h-6'/>
-          <Header onAddAccount={() => setIsModalOpen(true)} className='sticky top-6 z-10'/>
+          <Header onAddAccount={() => setIsModalOpen(true)} onSearch={handleSearch}
+            className='sticky top-6 z-10'/>
           <Container className='p-6 flex-1 mb-6'>
-            <DataTable/>
+            <DataTable onRefresh={handleTableRefresh} searchQuery={searchQuery}/>
           </Container>
           <Footer className='mt-auto'/>
         </Container>
