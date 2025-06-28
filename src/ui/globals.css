@@ -13,7 +13,7 @@
   --color-primary: oklch(15.907% 0.00002 271.152);
   --color-secondary: oklch(1 0.0148 248);
   --color-header: oklch(8.467% 0.00001 271.152 / 0.75);
-  --color-border: oklch(1 0.0148 248 / 0.5);
+  --color-border: oklch(1 0.0148 248 / 0.25);
   --color-table-border: oklch(1 0.0148 248 / 0.25);
   --color-background: oklch(4% 0.00001 271.152);
   --color-muted-background: oklch(24% 0.00001 271.152);
