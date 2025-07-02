@@ -61,3 +61,26 @@ ipcMain.handle('add-account', async(event, accountData) => {
     return { success: false, error: error};
   }
 })
+
+ipcMain.handle('delete-accounts', async(event, ids) => {
+  try {
+    await accountsDB.deleteAccounts(ids);
+    console.log('Accounts deleted with IDs:', ids);
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting accounts:', error);
+    return { success: false, error: error};
+  }
+})
+
+ipcMain.handle('update-account', async(event, id, accountData) => {
+  try {
+    await accountsDB.updateAccount(id, accountData);
+    console.log('Account updated with ID:', id);
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating account:', error);
+    return { success: false, error: error};
+  }
+})
+

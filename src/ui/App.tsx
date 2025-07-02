@@ -7,7 +7,7 @@ import Footer from './components/Footer'
 import Header from './components/Header'
 import Menu from './components/Menu'
 import Modal from './components/ModalWindow'
-import AddAccoutForm from './components/AddAccountForm'
+import AccountForm from './components/AccountForm'
 
 function App() {
  
@@ -55,7 +55,7 @@ function App() {
       setError('Ошибка создания аккаунта');
     }
   }
- 
+
   return (
     <>
     <Container>
@@ -68,10 +68,13 @@ function App() {
           </Container>
           <Footer className='mt-auto'/>
         </Container>
+
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Добавить аккаунт">
           {error && <div className='text-xs text-center mb-1'>{error}</div>}
-          <AddAccoutForm setIsOpen={()=> setIsModalOpen}  onCreateAccount={handleCreateAccount}/>
+          <AccountForm type='add' setIsOpen={()=> setIsModalOpen}  onCreateAccount={handleCreateAccount}/>
         </Modal>
+
+        
       </Container>
     </>
   )

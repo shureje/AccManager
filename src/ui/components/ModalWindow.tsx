@@ -8,8 +8,8 @@ interface ModalProps {
     children?: React.ReactNode;
     className?: string;
     title?: string;
-    onClose: () => void;
-    isOpen: boolean;
+    onClose?: () => void;
+    isOpen?: boolean;
 }
 
 export default function Modal({ isOpen, onClose, children, title, className }: ModalProps) {
@@ -17,13 +17,15 @@ export default function Modal({ isOpen, onClose, children, title, className }: M
 
     const handleBackdropClick = (e: React.MouseEvent) => {
         if (e.target === e.currentTarget) {
-            onClose();
+            if (onClose) {
+                onClose();
+            };
         }
     };
     
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
+            if (e.key === 'Escape' && onClose) onClose();
         }; 
         document.addEventListener('keydown', handleEscape);
         return () => {

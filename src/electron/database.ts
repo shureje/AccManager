@@ -156,6 +156,72 @@ export const accountsDB = {
 
             statement.finalize();
         }); 
+    },
+
+    deleteAccounts: (ids: number | number[]): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+            if (!ids || Array.isArray(ids) && ids.length === 0) {
+                reject(new Error(`ID is required`));
+                return;
+            }
+            
+            const idsArray = Array.isArray(ids) ? ids : [ids];
+            const placeholders = idsArray.map(() => '?').join(', ');
+
+            const statement = db.prepare(`
+                DELETE FROM accounts WHERE id IN (${placeholders})
+            `);
+
+            statement.run(idsArray, function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(this.changes > 0);
+                }
+            });
+
+            statement.finalize();
+        });
+    },
+
+    updateAccount: (id: number, updateDto: Partial<Omit<Account, 'id' | 'created_at' | 'updated_at'>>): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+            if (!id) {
+                reject(new Error(`ID is required`));
+                return;
+            }
+
+            if (Object.keys(updateDto).length === 0) {
+                reject(new Error(`No updates provided`));
+                return;
+            }
+
+            if (updateDto.pts !== undefined) {
+                if (updateDto.pts < 0 || updateDto.pts > 20000) {
+                    reject(new Error('Incorrect pts value'));
+                    return;
+                }
+            }
+
+            const fields = Object.keys(updateDto);
+            const values = Object.values(updateDto);
+
+            const mapedString = fields.map(field => `${field} = ?`).join(',');
+
+            const sql = `UPDATE accounts SET ${mapedString}, updated_at = datetime('now', 'localtime') WHERE id = ?`;
+
+            values.push(id);
+
+            const statement = db.prepare(sql);
+
+            statement.run(values, function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(this.changes > 0);
+                }
+            });
+        })
     }
 };
 

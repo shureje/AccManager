@@ -2,6 +2,8 @@ import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-tabl
 import { useEffect, useState } from "react";
 import Button from "./Button";
 import { Edit, Trash2 } from "lucide-react";
+import Modal from "./ModalWindow";
+import AccountForm from "./AccountForm";
 
 
 
@@ -9,6 +11,7 @@ interface DataTableProps {
     className?: string;
     onRefresh?: (func: () => Promise<void>) => void;
     searchQuery?: string;
+    onDelete?: (ids: number[]) => Promise<void>;
 }
 
 export function DataTable({className, onRefresh, searchQuery} : DataTableProps) {
@@ -35,6 +38,14 @@ export function DataTable({className, onRefresh, searchQuery} : DataTableProps) 
         }
     };
 
+    const handleDeleteAccounts = () => {
+        window.electronAPI.deleteAccounts(selectedRows).then((result) => {
+            if (result.success) {
+                setSelectedRows([]);
+                refreshAccounts();
+            }
+        }).catch(error => console.error('Error deleting accounts:', error));
+    }
 
     const columns = [
     {
@@ -99,7 +110,7 @@ export function DataTable({className, onRefresh, searchQuery} : DataTableProps) 
     return (
 
         <>
-            {selectedRows.length > 0 && <ActionPanel selectedRows={selectedRows} className="sticky top-20 z-[12]"/>}
+            {selectedRows.length > 0 && <ActionPanel data={data} refreshAccounts={refreshAccounts} onDelete={handleDeleteAccounts} selectedRows={selectedRows} className="sticky top-20 z-[12]"/>}
             <div className={`${className} m-auto w-full rounded-lg overflow-hidden border-[1px] border-border`}>
                 <table className={`m-auto w-full border-[1px] border-border `}>
                 <thead className="border-b-[1px] border-border">
@@ -136,15 +147,62 @@ export function DataTable({className, onRefresh, searchQuery} : DataTableProps) 
 interface ActionPanelProps {
     selectedRows?: any[];
     className?: string;
+    onDelete?: () => void;
+    data?: any[];
+    refreshAccounts?: () => Promise<void>;
 }
 
-function ActionPanel({selectedRows, className}: ActionPanelProps) {
+function ActionPanel({selectedRows, className, onDelete, data, refreshAccounts}: ActionPanelProps) {
+    
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedAccount, setSelectedAccount] = useState<any>(null);
+
+    const openChangeModal = () => {
+        if (!selectedRows || selectedRows.length === 0) return;
+        if (!data) return;
+
+        const account = data.find(acc => acc.id === selectedRows[0]);
+        setSelectedAccount(account);
+        setIsModalOpen(true);
+    }
+
+    const handleUpdateAccount = (updates: any) => {
+        if (!selectedRows || selectedRows.length === 0) return;
+
+        const filteredUpdates = Object.fromEntries(
+        Object.entries(updates).filter(([_, value]) => 
+            value !== undefined && value !== null && value !== ''
+        )
+        );
+    
+        if (Object.keys(filteredUpdates).length === 0) {
+            console.log('No fields to update');
+            return;
+        }
+
+        window.electronAPI.updateAccount(selectedRows[0], filteredUpdates).then((result) => {
+            if (result.success) {
+                setIsModalOpen(false);
+                if (refreshAccounts) {
+                    refreshAccounts();
+                };
+            }
+        }).catch(error => console.error('Error updating account:', error));
+    }
+
     return (
-        <div className={`${className} flex items-center  mb-2`}>
-            <div className="ml-auto mr-2 gap-2 space-x-2 p-2 bg-black/75 border-border border-[1px] rounded-md">
-                {selectedRows?.length === 1 && <Button className="text-xs "><Edit className="scale-[75%]"/>Изменить</Button>}
-                <Button className="text-xs"><Trash2 className="scale-[75%]"/>Удалить</Button>
+        <>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title='Изменить аккаунт'>
+                <AccountForm initialData={selectedAccount} onUpdateAccount={handleUpdateAccount} type='edit' setIsOpen={()=> setIsModalOpen} />
+            </Modal>
+
+            <div className={`${className} flex items-center  mb-2`}>
+                <div className="ml-auto mr-2 gap-2 space-x-2 p-2 bg-black/75 border-border border-[1px] rounded-md">
+                    {selectedRows?.length === 1 && <Button className="text-xs " onClick={openChangeModal}><Edit className="scale-[75%]"/>Изменить</Button>}
+                    <Button onClick={onDelete} className="text-xs"><Trash2 className="scale-[75%]"/>Удалить</Button>
+                </div>
             </div>
-        </div>
+        </>
     )
 }

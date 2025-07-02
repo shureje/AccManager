@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "./Button";
 import Input from "./Input";
 
@@ -6,11 +6,14 @@ import Input from "./Input";
 
 interface AddAccoutFormProps {
     className?: string;
-    onCreateAccount: (accountData: any) => void;
-    setIsOpen: () => void;
+    onCreateAccount?: (accountData: any) => void;
+    onUpdateAccount?: (accountData: any) => void;
+    setIsOpen?: () => void;
+    type?: string;
+    initialData?: any;
 }
 
-export default function AddAccoutForm({className, onCreateAccount}: AddAccoutFormProps) {
+export default function AccountForm({className, onCreateAccount, onUpdateAccount, type, initialData}: AddAccoutFormProps) {
 
     const [formData, setFormData] = useState({
         login: '',
@@ -21,6 +24,19 @@ export default function AddAccoutForm({className, onCreateAccount}: AddAccoutFor
         nickname: ''
     });
 
+    useEffect(() => {
+        if (initialData) {
+            setFormData({
+                login: initialData.login || '',
+                password: '',  // Пароль не показываем для безопасности
+                email: initialData.email || '',
+                phone: initialData.phone || '',
+                pts: initialData.pts || 0,
+                nickname: initialData.nickname || ''
+            });
+        }
+    }, [initialData]);
+
     const handleChange = () => (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData(prevState => ({
             ...prevState,
@@ -29,25 +45,30 @@ export default function AddAccoutForm({className, onCreateAccount}: AddAccoutFor
     };
 
     const handleSubmit = () => {
-      
-        onCreateAccount(formData);
+        if (onCreateAccount) {
+            onCreateAccount(formData)
+        };
+
+        if (onUpdateAccount) {
+            onUpdateAccount(formData)
+        }
     };
 
   
 
     const FormItems = [
         {
-            label: "Логин*",
+            label: "Логин",
             placeholder: "Login",
             type: "text"
         },
         {
-            label: "Пароль*",
+            label: "Пароль",
             placeholder: "Password",
             type: "password"
         },
         {
-            label: "Почта*",
+            label: "Почта",
             placeholder: "Email",
             type: "email"
         },
@@ -58,17 +79,19 @@ export default function AddAccoutForm({className, onCreateAccount}: AddAccoutFor
 
         },
         {
-            label: "Pts*",
+            label: "Pts",
             placeholder: "Pts",
             type: "number"
         },
         {
-            label: "Nickname*",
+            label: "Nickname",
             placeholder: "Nickname",
             type: "text"
         }
     ]
 
+    const Type = type === 'add' ? 'Добавить' : type === 'edit' ? 'Изменить' : ''
+    
     return(
         <>
         <div className={`${className} flex flex-col gap-4`}>
@@ -80,7 +103,7 @@ export default function AddAccoutForm({className, onCreateAccount}: AddAccoutFor
                     </div>
                ))}
             </div>
-            <Button onClick={handleSubmit} className="w-fit m-auto text-sm">Добавить аккаунт</Button>
+            <Button onClick={handleSubmit} className="w-fit m-auto text-sm">{`${Type} аккаунт`}</Button>
         </div>
         </>
     )
