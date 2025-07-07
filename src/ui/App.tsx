@@ -63,7 +63,7 @@ function App() {
           <Menu className='sticky top-0 z-[1000] h-6'/>
           <Header onAddAccount={() => setIsModalOpen(true)} onSearch={handleSearch}
             className='sticky top-6 z-10'/>
-          <Container className='px-6 py-4 flex-1 mb-6'>
+          <Container>
             <DataTable onRefresh={handleTableRefresh} searchQuery={searchQuery}/>
           </Container>
           <Footer className='mt-auto'/>

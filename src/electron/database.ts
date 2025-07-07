@@ -63,41 +63,41 @@ app.whenReady().then(() => {
 
 
 
-function insertTestData() {
-    const testAccounts = [
-        { login: 'alex_gamer', password: 'secure123', nickname: 'AlexTheGreat', pts: 1500, email: 'alex@gmail.com', phone: '+79161234567' },
-        { login: 'maria_pro', password: 'mypass456', nickname: 'MariaPro', pts: 2000, email: 'maria@yandex.ru', phone: '+79162345678' },
-        { login: 'dmitry_king', password: 'king789', nickname: 'DmitryKing', pts: 1200, email: 'dmitry@mail.ru', phone: '+79163456789' },
-        { login: 'anna_star', password: 'star321', nickname: 'AnnaStar', pts: 1800, email: 'anna@outlook.com', phone: '+79164567890' },
-        { login: 'sergey_wolf', password: 'wolf654', nickname: 'SergeyWolf', pts: 2200, email: 'sergey@rambler.ru', phone: '+79165678901' },
-        { login: 'elena_moon', password: 'moon987', nickname: 'ElenaMoon', pts: 1600, email: 'elena@gmail.com', phone: '+79166789012' },
-        { login: 'ivan_fire', password: 'fire147', nickname: 'IvanFire', pts: 1900, email: 'ivan@yandex.ru', phone: '+79167890123' },
-        { login: 'olga_ice', password: 'ice258', nickname: 'OlgaIce', pts: 1400, email: 'olga@mail.ru', phone: '+79168901234' },
-        { login: 'pavel_storm', password: 'storm369', nickname: 'PavelStorm', pts: 2100, email: 'pavel@gmail.com', phone: '+79169012345' },
-        { login: 'natasha_wind', password: 'wind741', nickname: 'NatashaWind', pts: 1700, email: 'natasha@outlook.com', phone: '+79160123456' },
-        { login: 'roman_eagle', password: 'eagle852', nickname: 'RomanEagle', pts: 1300, email: 'roman@rambler.ru', phone: '+79161234568' },
-        { login: 'julia_rose', password: 'rose963', nickname: 'JuliaRose', pts: 2300, email: 'julia@gmail.com', phone: '+79162345679' },
-        { login: 'maxim_lion', password: 'lion159', nickname: 'MaximLion', pts: 1550, email: 'maxim@yandex.ru', phone: '+79163456780' },
-        { login: 'victoria_sun', password: 'sun753', nickname: 'VictoriaSun', pts: 1850, email: 'victoria@mail.ru', phone: '+79164567891' },
-        { login: 'andrey_shark', password: 'shark486', nickname: 'AndreyShark', pts: 2050, email: 'andrey@outlook.com', phone: '+79165678902' }
-    ]
+// function insertTestData() {
+//     const testAccounts = [
+//         { login: 'alex_gamer', password: 'secure123', nickname: 'AlexTheGreat', pts: 1500, email: 'alex@gmail.com', phone: '+79161234567' },
+//         { login: 'maria_pro', password: 'mypass456', nickname: 'MariaPro', pts: 2000, email: 'maria@yandex.ru', phone: '+79162345678' },
+//         { login: 'dmitry_king', password: 'king789', nickname: 'DmitryKing', pts: 1200, email: 'dmitry@mail.ru', phone: '+79163456789' },
+//         { login: 'anna_star', password: 'star321', nickname: 'AnnaStar', pts: 1800, email: 'anna@outlook.com', phone: '+79164567890' },
+//         { login: 'sergey_wolf', password: 'wolf654', nickname: 'SergeyWolf', pts: 2200, email: 'sergey@rambler.ru', phone: '+79165678901' },
+//         { login: 'elena_moon', password: 'moon987', nickname: 'ElenaMoon', pts: 1600, email: 'elena@gmail.com', phone: '+79166789012' },
+//         { login: 'ivan_fire', password: 'fire147', nickname: 'IvanFire', pts: 1900, email: 'ivan@yandex.ru', phone: '+79167890123' },
+//         { login: 'olga_ice', password: 'ice258', nickname: 'OlgaIce', pts: 1400, email: 'olga@mail.ru', phone: '+79168901234' },
+//         { login: 'pavel_storm', password: 'storm369', nickname: 'PavelStorm', pts: 2100, email: 'pavel@gmail.com', phone: '+79169012345' },
+//         { login: 'natasha_wind', password: 'wind741', nickname: 'NatashaWind', pts: 1700, email: 'natasha@outlook.com', phone: '+79160123456' },
+//         { login: 'roman_eagle', password: 'eagle852', nickname: 'RomanEagle', pts: 1300, email: 'roman@rambler.ru', phone: '+79161234568' },
+//         { login: 'julia_rose', password: 'rose963', nickname: 'JuliaRose', pts: 2300, email: 'julia@gmail.com', phone: '+79162345679' },
+//         { login: 'maxim_lion', password: 'lion159', nickname: 'MaximLion', pts: 1550, email: 'maxim@yandex.ru', phone: '+79163456780' },
+//         { login: 'victoria_sun', password: 'sun753', nickname: 'VictoriaSun', pts: 1850, email: 'victoria@mail.ru', phone: '+79164567891' },
+//         { login: 'andrey_shark', password: 'shark486', nickname: 'AndreyShark', pts: 2050, email: 'andrey@outlook.com', phone: '+79165678902' }
+//     ]
 
 
 
-    const statement = db.prepare(`
-    INSERT OR IGNORE INTO accounts (login, password, nickname, pts, email, phone)
-    VALUES (?, ?, ?, ?, ?, ?)`
-    );
+//     const statement = db.prepare(`
+//     INSERT OR IGNORE INTO accounts (login, password, nickname, pts, email, phone)
+//     VALUES (?, ?, ?, ?, ?, ?)`
+//     );
     
-    testAccounts.forEach(account => {
-        statement.run([account.login, account.password, account.nickname, account.pts, account.email, account.phone]);
-    });
+//     testAccounts.forEach(account => {
+//         statement.run([account.login, account.password, account.nickname, account.pts, account.email, account.phone]);
+//     });
 
 
-    statement.finalize();
-    console.log('Test data inserted successfully!');
+//     statement.finalize();
+//     console.log('Test data inserted successfully!');
 
-}
+// }
 
 export const accountsDB = {
     getAll: (): Promise<Account[]> => {

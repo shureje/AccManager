@@ -4,6 +4,7 @@ import Button from "./Button";
 import { Edit, Trash2 } from "lucide-react";
 import Modal from "./ModalWindow";
 import AccountForm from "./AccountForm";
+import Acception from "./Acception";
 
 
 
@@ -19,6 +20,7 @@ export function DataTable({className, onRefresh, searchQuery} : DataTableProps) 
     const [selectedRows, setSelectedRows] = useState<number[]>([]);
     const [data, setData] = useState<any[]>([]);
     const [filtredData, setFiltredData] = useState<any[]>([]);
+   
 
     // Обработка выбора одной строки
     const handleRowSelect = (id: number, checked: boolean) => {
@@ -65,6 +67,7 @@ export function DataTable({className, onRefresh, searchQuery} : DataTableProps) 
     },
     {accessorKey: 'id', header: 'ID'},
     {accessorKey: 'login', header: 'Логин'},
+    {accessorKey: 'password', header: 'Пароль'},
     {accessorKey: 'nickname', header: 'Ник'},
     {accessorKey: 'pts', header: 'Pts'},
     {accessorKey: 'created_at', header: 'Дата добавления'},
@@ -109,15 +112,15 @@ export function DataTable({className, onRefresh, searchQuery} : DataTableProps) 
 
     return (
 
-        <>
-            {selectedRows.length > 0 && <ActionPanel data={data} refreshAccounts={refreshAccounts} onDelete={handleDeleteAccounts} selectedRows={selectedRows} className="sticky top-20 z-[12]"/>}
-            <div className={`${className} m-auto w-full rounded-lg overflow-hidden border-[1px] border-border`}>
-                <table className={`m-auto w-full border-[1px] border-border `}>
+        <>      
+        <div className="flex gap-4 m-3 items-start">
+            <div className={`${className}  w-full rounded-lg overflow-hidden border-[1px] border-border `}>
+                <table className={`w-full border-[1px] border-border m-auto`}>
                 <thead className="border-b-[1px] border-border">
                     {table.getHeaderGroups().map(headerGroup => (
                     <tr key={headerGroup.id} >
                         {headerGroup.headers.map(header => (
-                        <th key={header.id} className={`${header.column.id === 'login' ? 'w-40' : header.column.id === 'date' ? 'w-48' : 'w-auto'}`}>
+                        <th key={header.id} className={``}>
                             {flexRender(header.column.columnDef.header, header.getContext())}
                         </th>
                         ))}
@@ -139,6 +142,9 @@ export function DataTable({className, onRefresh, searchQuery} : DataTableProps) 
                 </tbody>
                 </table>
             </div>
+            {selectedRows.length > 0 && <ActionPanel data={data} refreshAccounts={refreshAccounts} onDelete={handleDeleteAccounts} selectedRows={selectedRows}
+            className={`sticky top-20`}/>}
+            </div>  
         </>
     )
 }
@@ -157,6 +163,7 @@ function ActionPanel({selectedRows, className, onDelete, data, refreshAccounts}:
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAccount, setSelectedAccount] = useState<any>(null);
+    const [isAcceptionModalOpen, setIsAcceptionModalOpen] = useState(false);
 
     const openChangeModal = () => {
         if (!selectedRows || selectedRows.length === 0) return;
@@ -165,6 +172,10 @@ function ActionPanel({selectedRows, className, onDelete, data, refreshAccounts}:
         const account = data.find(acc => acc.id === selectedRows[0]);
         setSelectedAccount(account);
         setIsModalOpen(true);
+    }
+
+    const OpenAcceptionModal = () => {
+        setIsAcceptionModalOpen(true);
     }
 
     const handleUpdateAccount = (updates: any) => {
@@ -197,10 +208,14 @@ function ActionPanel({selectedRows, className, onDelete, data, refreshAccounts}:
                 <AccountForm initialData={selectedAccount} onUpdateAccount={handleUpdateAccount} type='edit' setIsOpen={()=> setIsModalOpen} />
             </Modal>
 
-            <div className={`${className} flex items-center  mb-2`}>
-                <div className="ml-auto mr-2 gap-2 space-x-2 p-2 bg-black/75 border-border border-[1px] rounded-md">
-                    {selectedRows?.length === 1 && <Button className="text-xs " onClick={openChangeModal}><Edit className="scale-[75%]"/>Изменить</Button>}
-                    <Button onClick={onDelete} className="text-xs"><Trash2 className="scale-[75%]"/>Удалить</Button>
+            <Modal isOpen={isAcceptionModalOpen} onClose={() => setIsAcceptionModalOpen(false)} title="Вы уверены?">
+                <Acception onConfirm={onDelete} onCancel={() => setIsAcceptionModalOpen(false)}/>
+            </Modal>
+
+            <div className={`${className} `}>
+                <div className="ml-auto space-y-1 p-2 bg-black/75 border-border border-[1px] rounded-md flex flex-col ">
+                    {selectedRows?.length === 1 && <Button className="text-xs " onClick={openChangeModal}><Edit className="scale-[75%]"/></Button>}
+                    <Button onClick={OpenAcceptionModal} className="text-xs"><Trash2 className="scale-[75%]"/></Button>
                 </div>
             </div>
         </>

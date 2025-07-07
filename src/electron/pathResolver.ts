@@ -9,3 +9,10 @@ export function getPreloadPath() {
         'dist-electron/preload.cjs'
     )
 }
+
+export function getIconPath() {
+    return path.join(
+        app.getAppPath(),
+        isDev() ? 'src/electron/assets/x.ico' : 'dist-electron/x.ico'
+    )
+}

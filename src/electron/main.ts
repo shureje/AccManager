@@ -1,14 +1,14 @@
 import {app, BrowserWindow, ipcMain} from 'electron'
 import path from 'path'
 import { isDev } from './util.js';
-import { getPreloadPath } from './pathResolver.js';
+import { getIconPath, getPreloadPath } from './pathResolver.js';
 import './database.js';
 import { accountsDB, db } from './database.js';
 
 
 
 app.on('ready', () => {
-  let mainWindow = new BrowserWindow({
+  const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     minWidth: 700,
@@ -16,7 +16,7 @@ app.on('ready', () => {
     backgroundColor: '#0a0a0a',
     show: false,
     autoHideMenuBar: true,
-    icon: path.join( app.getAppPath(), '/public/x.jpg'),
+    icon: getIconPath(),
     webPreferences: {
       preload: getPreloadPath(),
     },
@@ -32,7 +32,7 @@ app.on('ready', () => {
   mainWindow.once('ready-to-show', () => {
   mainWindow.show()
   })
-  mainWindow.setTitle('FiatLocker');
+  mainWindow.setTitle('FiatLocker(alpha)');
 })
 
 ipcMain.handle('get-accounts', async() => {

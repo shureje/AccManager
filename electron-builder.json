@@ -1,13 +1,26 @@
 {
     "appId": "com.zxsakurai.accmanager",
     "files": ["dist-electron", "dist-react"],
-    "extraResources": ["dist-electron/preload.cjs"],
+    "extraResources": [
+        "dist-electron/preload.cjs",
+        {
+            "from": "src/electron/assets/x.ico",
+            "to": "dist-electron/x.ico"
+        }
+    ],
     "linux": {
         "target": "AppImage",
         "category": "Utility"
     },
     "win": {
-        "target": ["portable", "msi"],
-        "icon": "./public/x.jpg"
+        "target": ["portable", "nsis"],
+        "icon": "src/electron/assets/x.ico"
+    },
+    "nsis": {
+        "oneClick": false,
+        "allowToChangeInstallationDirectory": true,
+        "createDesktopShortcut": true,
+        "createStartMenuShortcut": true,
+        "shortcutName": "AccManager"
     }
 }

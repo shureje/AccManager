@@ -1,8 +1,8 @@
 {
   "name": "accmanager",
   "private": true,
-  "version": "0.0.0",
-  "description": "hui",
+  "version": "0.0.1",
+  "description": "Приложение для менеджмента аккаунтов",
   "author": "zxsakurai",
   "type": "module",
   "main": "./dist-electron/main.js",
