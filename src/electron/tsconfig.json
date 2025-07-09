@@ -5,5 +5,8 @@
         "module": "nodenext",
         "outDir": "../../dist-electron",
         "skipLibCheck": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "strictPropertyInitialization": false
     }
 }

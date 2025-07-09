@@ -35,7 +35,7 @@ export default function Modal({ isOpen, onClose, children, title, className }: M
 
      return (
         <div className={`${className} fixed inset-0 backdrop-blur-[1px] bg-black bg-opacity-50 flex items-center justify-center z-50`} onClick={handleBackdropClick}>
-            <div className="bg-primary border border-border rounded-lg shadow-lg max-w-md w-full mx-4">
+            <div className="bg-primary border border-border  shadow-lg max-w-md w-full mx-4">
                 {/* Заголовок */}
                 {title && (
                     <div className="flex justify-between items-center p-4 border-b border-border">

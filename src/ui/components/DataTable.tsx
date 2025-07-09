@@ -83,6 +83,11 @@ export function DataTable({className, onRefresh, searchQuery} : DataTableProps) 
     }, []);
 
     useEffect(() => {
+        const interval = setInterval(refreshAccounts, 5000);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
         if (!searchQuery) {
             setFiltredData(data);
         } else {

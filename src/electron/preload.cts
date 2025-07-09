@@ -1,5 +1,6 @@
 import { ipcRenderer } from "electron";
-import { Account } from "./database";
+import { Account } from "./entities/Account";
+
 
 const electron = require('electron');
 
