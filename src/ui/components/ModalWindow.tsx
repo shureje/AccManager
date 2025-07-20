@@ -13,7 +13,16 @@ interface ModalProps {
 }
 
 export default function Modal({ isOpen, onClose, children, title, className }: ModalProps) {
-    if (!isOpen) return null;
+
+      useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && onClose) onClose();
+        }; 
+        document.addEventListener('keydown', handleEscape);
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+        };
+    }, [onClose]);  
 
     const handleBackdropClick = (e: React.MouseEvent) => {
         if (e.target === e.currentTarget) {
@@ -23,22 +32,15 @@ export default function Modal({ isOpen, onClose, children, title, className }: M
         }
     };
     
-    useEffect(() => {
-        const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && onClose) onClose();
-        }; 
-        document.addEventListener('keydown', handleEscape);
-        return () => {
-            document.removeEventListener('keydown', handleEscape);
-        };
-    }, []);
+     if (!isOpen) return null;
+  
 
      return (
-        <div className={`${className} fixed inset-0 backdrop-blur-[1px] bg-black bg-opacity-50 flex items-center justify-center z-50`} onClick={handleBackdropClick}>
-            <div className="bg-primary border border-border  shadow-lg max-w-md w-full mx-4">
+        <div className={`${className} pt-12 fixed flex inset-0 backdrop-blur-[1px] bg-black bg-opacity-50 items-center justify-center z-30`} onClick={handleBackdropClick}>
+            <div className="bg-primary border border-border/25  shadow-lg max-w-md w-full mx-4">
                 {/* Заголовок */}
                 {title && (
-                    <div className="flex justify-between items-center p-4 border-b border-border">
+                    <div className="flex justify-between items-center p-4 border-b border-border/25">
                         <div className="text-secondary">{title}</div>
                         <button onClick={onClose}  className="text-secondary hover:text-border text-2xl leading-none">
                             <X/>

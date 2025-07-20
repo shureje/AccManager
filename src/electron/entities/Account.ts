@@ -1,3 +1,4 @@
+import { IsEmail, IsNotEmpty, length, Length } from "class-validator";
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 
@@ -16,9 +17,11 @@ export class Account {
     id: number;
 
     @Column()
+    @IsNotEmpty({ message: 'Login is required' })
     login: string;
     
     @Column()
+    @IsNotEmpty({ message: 'Password is required' })
     password: string;
 
     @Column({nullable: true})
@@ -28,6 +31,8 @@ export class Account {
     pts: number;
 
     @Column()
+    @IsEmail({},{message: 'Invalid email'} )
+    @IsNotEmpty({message: 'Email is required'})
     email: string;
 
     @Column({nullable: true})
@@ -44,6 +49,7 @@ export class Account {
     type: AccountType;
 
     @Column('text', {nullable: true})
+    @Length(0, 100, {message: 'Note can be max lenght 100'})
     note: string;
 
     @CreateDateColumn()

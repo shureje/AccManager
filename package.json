@@ -1,7 +1,7 @@
 {
-  "name": "accmanager",
+  "name": "fiatlocker",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2-alpha",
   "description": "Приложение для менеджмента аккаунтов",
   "author": "zxsakurai",
   "type": "module",
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@tanstack/react-table": "^8.21.3",
+    "class-validator": "^0.14.2",
     "lucide-react": "^0.522.0",
     "pg": "^8.16.3",
     "react": "^19.1.0",

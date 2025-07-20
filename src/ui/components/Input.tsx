@@ -15,6 +15,6 @@ export default function Input({placeholder, type, name, value, onChange} : Input
     name={name}
     value={value}
     onChange={onChange}
-    className="text-sm pl-2 py-[2px] bg-primary rounded-md border-[1px] border-border"/>
+    className="text-sm pl-2 py-[2px] bg-primary rounded-md border-[1px] border-border/25"/>
   )
 }

@@ -3,8 +3,6 @@ import { app } from "electron";
 import path, { dirname } from 'path'
 import fs from 'fs'
 import { DataSource } from "typeorm";
-import { Account } from "./entities/Account.js";
-
 
 class PostgresManager {
 
@@ -17,7 +15,9 @@ class PostgresManager {
         const documentsFolder = app.getPath('documents');
         const appFolder = path.join(documentsFolder, 'FiatLocker');
         this.dataDir = path.join(appFolder, 'pgdata');
-        this.binDir = path.join(app.getAppPath(), 'postgres-bin', 'bin');
+       this.binDir = app.isPackaged 
+        ? path.join(process.resourcesPath, 'postgres-bin', 'bin')
+        : path.join(app.getAppPath(), 'postgres-bin', 'bin');
 
     }
 
@@ -25,9 +25,10 @@ class PostgresManager {
         if (!fs.existsSync(this.dataDir)) {
             await this.initDB();
         }
-        const serverStarted =  await this.startServer();
+        const serverStarted = await this.startServer();
 
         if (serverStarted) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
             await this.createDatabase();
 
             const connected = await this.testConnection();
@@ -57,14 +58,6 @@ class PostgresManager {
                 '--auth-host=md5'
             ])
 
-            initProcess.stdout?.on('data', (data) => {
-                console.log('initdb stdout:', data.toString());
-            });
-
-            initProcess.stderr?.on('data', (data) => {
-                console.error('initdb stderr:', data.toString());
-            });
-
             initProcess.on('close', (code) => {
                 fs.unlinkSync(pwfile);
                 console.log('initdb finished with code:', code);
@@ -87,14 +80,6 @@ class PostgresManager {
                 '-D', this.dataDir,
                 '-p', this.port.toString()
             ]);
-            
-            this.pgProcess.stdout?.on('data', (data) => {
-                console.log('initdb stdout:', data.toString());
-            });
-
-            this.pgProcess.stderr?.on('data', (data) => {
-                console.error('initdb stderr:', data.toString());
-            });
 
             this.pgProcess.on('spawn', () => resolve(true));
             this.pgProcess.on('error', () => resolve(false));
@@ -102,7 +87,7 @@ class PostgresManager {
             console.log('server started on port:', this.port);
         })
     }
-    
+ 
     private async createDatabase(): Promise<void> {
         return new Promise((resolve, reject) => {
             const createdPath = path.join(this.binDir, 'createdb.exe');

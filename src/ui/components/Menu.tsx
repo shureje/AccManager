@@ -11,13 +11,13 @@ export default function Menu({className}: MenuProps) {
 
     const menuItems = [
         {label: "Файл", submenu: [
-            {label: "Экспорт"},
+            {label: "In progress"},
             ]},
         {label: "Настройки",  submenu: [
-            {label: "Параметры"}
+            {label: "In progress"}
         ]},
          {label: "Справка",  submenu: [
-            {label: "Руководство"}
+            {label: "In progress"}
         ]},
     ]
 
@@ -64,17 +64,21 @@ export default function Menu({className}: MenuProps) {
             document.removeEventListener('mousedown', handleClickOutside);
         }
     },[activeMenuIndex]);
-    
+
+    const iconPath = import.meta.env.PROD 
+        ?  '../dist-electron/x.ico'
+        : './x.ico';
+
 return(
     <>
     <Container ref={containerRef} 
-    className={`${className} flex items-center relative  h-8 text-gray-300 `}
+    className={`${className} bg-background flex items-center relative  h-8 text-gray-300 z-40`}
     style={{
         WebkitAppRegion: 'drag',
     } as React.CSSProperties}
     >
 
-    <img src="/x.ico" alt="icon" className="mx-2 my-2 items-center w-5 h-5"/>
+    <img src={iconPath} alt="icon" className="mx-2 my-2 items-center w-5 h-5"/>
 
     <ul className="flex h-full">
         {menuItems.map((item, index) => (
@@ -103,7 +107,7 @@ return(
      
     {activeMenuIndex !== null && (
         <ul 
-            className="absolute bg-primary shadow-sm shadow-muted-background rounded-sm p-1 z-10"
+            className="absolute bg-primary shadow-sm shadow-muted-background rounded-sm p-1 z-[100]"
             style={{
                 left: `${subMenuPosition.left}px`,
                 top: '100%'
