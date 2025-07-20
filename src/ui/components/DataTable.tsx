@@ -1,10 +1,5 @@
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table"
-import { useEffect, useState } from "react";
-import Button from "./Button";
-import { Edit, Trash2 } from "lucide-react";
-import Modal from "./ModalWindow";
-import AccountForm from "./AccountForm";
-import Acception from "./Acception";
+import { useCallback, useEffect,  useMemo,  useState } from "react";
 
 
 
@@ -12,75 +7,90 @@ interface DataTableProps {
     className?: string;
     onRefresh?: (func: () => Promise<void>) => void;
     searchQuery?: string;
-    onDelete?: (ids: number[]) => Promise<void>;
+
+    onAccountSelect?: (id: number) => void;
+
+    onSelectionChange?: (selectedRows: number[], data: any[]) => void;
 }
 
-export function DataTable({className, onRefresh, searchQuery} : DataTableProps) {
+export function DataTable({className, onRefresh, searchQuery, 
+    onSelectionChange, onAccountSelect} : DataTableProps) {
     
+   
+    const [filtredData, setFiltredData] = useState<any[]>([]);
     const [selectedRows, setSelectedRows] = useState<number[]>([]);
     const [data, setData] = useState<any[]>([]);
-    const [filtredData, setFiltredData] = useState<any[]>([]);
-   
+    
 
-    // Обработка выбора одной строки
-    const handleRowSelect = (id: number, checked: boolean) => {
-        if (checked) {
-            setSelectedRows(prev => [...prev, id]);
-        } else {
-            setSelectedRows(prev => prev.filter(rowId => rowId !== id));
-        }
-    };
-
-    // Выбрать все / снять все
-    const handleSelectAll = (checked: boolean) => {
-        if (checked) {
-            setSelectedRows(filtredData.map(row => row.id));
-        } else {
-            setSelectedRows([]);
-        }
-    };
-
-    const handleDeleteAccounts = () => {
-        window.electronAPI.deleteAccounts(selectedRows).then((result) => {
-            if (result.success) {
-                setSelectedRows([]);
-                refreshAccounts();
+    const handleRowSelect = useCallback((id: number, checked: boolean) => {
+        setSelectedRows(prev => {  // <-- используй prev вместо selectedRows
+            if (checked) {
+                return [...prev, id];
+            } else {
+                return prev.filter(rowId => rowId !== id);
             }
-        }).catch(error => console.error('Error deleting accounts:', error));
-    }
+        });
+    }, []);
 
-    const columns = [
+    const handleHeaderClick = useCallback(() => {
+        if (selectedRows.length > 0) {
+            // Если что-то выбрано - сбрасываем все
+            setSelectedRows([]);
+        } else {
+            // Если ничего не выбрано - выбираем все
+            setSelectedRows(filtredData.map(row => row.id));
+        }
+    }, [selectedRows, filtredData]);
+
+
+
+    const columns = useMemo(() => [
     {
         id: 'select',
         header: () => (
-            <input type="checkbox" checked={selectedRows.length === filtredData.length && filtredData.length > 0} 
-            onChange={(e) => handleSelectAll(e.target.checked)} className="scale-[125%]"/>
+            <div className="flex items-center justify-center">
+                <input 
+                    type="checkbox" 
+                    checked={selectedRows.length > 0} 
+                    onChange={handleHeaderClick}
+                    className="scale-[125%] "
+                />
+            </div>
         ),
         cell: ({ row }: {row: any}) => (
-            <input
-                type="checkbox"
-                checked={selectedRows.includes(row.original.id)}
-                onChange={(e) => handleRowSelect(row.original.id, e.target.checked)}
-                className="scale-[110%]"
-            />
+            <div className="flex items-center justify-center">
+                <input
+                    type="checkbox"
+                    checked={!!selectedRows.includes(row.original.id)}
+                    onChange={(e) => {
+                        handleRowSelect(row.original.id, e.target.checked);
+                    }}
+                    className="scale-[110%]"
+                />
+            </div>
         ),
     },
     {accessorKey: 'id', header: 'ID'},
-    {accessorKey: 'login', header: 'Логин'},
-    {accessorKey: 'password', header: 'Пароль'},
-    {accessorKey: 'nickname', header: 'Ник'},
-    {accessorKey: 'pts', header: 'Pts'},
-    {accessorKey: 'created_at', header: 'Дата добавления'},
-    ];
+    {accessorKey: 'login', 
+    header: 'ЛОГИН',
+    cell: ({row}: {row:any}) => {
+        return(
+        <div className="cursor-pointer hover:text-blue-400 select-none"
+            onClick={() => onAccountSelect?.(row.original.id)}>
+                {row.original.login}
+            </div>
+        )
+    }},
+    {accessorKey: 'nickname', header: 'НИК'},
+    {accessorKey: 'pts', header: 'PTS'},
+    {accessorKey: 'type', header: 'ТИП'}
+    ], [selectedRows, onAccountSelect, handleHeaderClick, handleRowSelect]);
 
 
-    useEffect(()=> {
-        refreshAccounts();
-        
-        if (onRefresh) {
-            onRefresh(refreshAccounts);
-        }
-    }, []);
+    useEffect(() => {
+        setSelectedRows(prev => prev.filter(id => filtredData.some(row => row.id === id)));
+    }, [filtredData]);
+  
 
     useEffect(() => {
         if (!searchQuery) {
@@ -95,14 +105,31 @@ export function DataTable({className, onRefresh, searchQuery} : DataTableProps) 
         }
     }, [searchQuery, data])
 
-    const refreshAccounts = async() => {
+    
+    const loadData = useCallback(async () => {
         try {
             const accounts = await window.electronAPI.getAccounts();
             setData(accounts);
         } catch (error) {
             console.error('Error fetching accounts:', error);
-        }  
-    }
+        }
+    },[]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
+
+   useEffect(() => {    
+        if (onRefresh) {
+            onRefresh(() => loadData());
+        }
+    }, [onRefresh, loadData]);
+
+    useEffect(() => {
+        if (onSelectionChange) {
+            onSelectionChange(selectedRows, data);
+        }
+    }, [selectedRows, data, onSelectionChange]);
 
     const table = useReactTable({
         data: filtredData,
@@ -113,27 +140,26 @@ export function DataTable({className, onRefresh, searchQuery} : DataTableProps) 
     return (
 
         <>      
-        <div className="flex gap-4 m-3 items-start">
-            <div className={`${className}  w-full rounded-lg overflow-hidden border-[1px] border-border `}>
-                <table className={`w-full border-[1px] border-border m-auto`}>
-                <thead className="border-b-[1px] border-border">
+            <div className={`${className}  w-full overflow-y-auto`} >
+                <table className={`w-full`}>
+                <thead className="bg-table-first-color sticky top-0 z-[15] sm:text-sm lg:text-lg ">
                     {table.getHeaderGroups().map(headerGroup => (
-                    <tr key={headerGroup.id} >
-                        {headerGroup.headers.map(header => (
-                        <th key={header.id} className={``}>
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                        </th>
-                        ))}
-                    </tr>
+                        <tr key={headerGroup.id}>
+                            {headerGroup.headers.map(header => (
+                                <th key={header.id} className="outline outline-1 outline-border/25 bg-table-first-color">
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
+                                </th>
+                            ))}
+                        </tr>
                     ))}
                 </thead>
                 <tbody className="text-secondary text-center text-sm">
                     {table.getRowModel().rows.map((row, index) => (
                     <tr key={row.id}
-                    className={`${index % 2 === 0 ? "bg-primary" : "bg-muted-background"} items-center`}>
+                    className={`${index % 2 === 0 ? "bg-primary" : "bg-table-seccond-color"} items-center`}>
                         {row.getVisibleCells().map(cell => (
                         <td key={cell.id}
-                        className=" border-r-[1px] border-border">
+                        className=" border-r-[1px] border-b-[1px] border-table-border/20">
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                         ))}
@@ -142,82 +168,8 @@ export function DataTable({className, onRefresh, searchQuery} : DataTableProps) 
                 </tbody>
                 </table>
             </div>
-            {selectedRows.length > 0 && <ActionPanel data={data} refreshAccounts={refreshAccounts} onDelete={handleDeleteAccounts} selectedRows={selectedRows}
-            className={`sticky top-20`}/>}
-            </div>  
         </>
     )
 }
 
 
-interface ActionPanelProps {
-    selectedRows?: any[];
-    className?: string;
-    onDelete?: () => void;
-    data?: any[];
-    refreshAccounts?: () => Promise<void>;
-}
-
-function ActionPanel({selectedRows, className, onDelete, data, refreshAccounts}: ActionPanelProps) {
-    
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedAccount, setSelectedAccount] = useState<any>(null);
-    const [isAcceptionModalOpen, setIsAcceptionModalOpen] = useState(false);
-
-    const openChangeModal = () => {
-        if (!selectedRows || selectedRows.length === 0) return;
-        if (!data) return;
-
-        const account = data.find(acc => acc.id === selectedRows[0]);
-        setSelectedAccount(account);
-        setIsModalOpen(true);
-    }
-
-    const OpenAcceptionModal = () => {
-        setIsAcceptionModalOpen(true);
-    }
-
-    const handleUpdateAccount = (updates: any) => {
-        if (!selectedRows || selectedRows.length === 0) return;
-
-        const filteredUpdates = Object.fromEntries(
-        Object.entries(updates).filter(([_, value]) => 
-            value !== undefined && value !== null && value !== ''
-        )
-        );
-    
-        if (Object.keys(filteredUpdates).length === 0) {
-            console.log('No fields to update');
-            return;
-        }
-
-        window.electronAPI.updateAccount(selectedRows[0], filteredUpdates).then((result) => {
-            if (result.success) {
-                setIsModalOpen(false);
-                if (refreshAccounts) {
-                    refreshAccounts();
-                };
-            }
-        }).catch(error => console.error('Error updating account:', error));
-    }
-
-    return (
-        <>
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title='Изменить аккаунт'>
-                <AccountForm initialData={selectedAccount} onUpdateAccount={handleUpdateAccount} type='edit' setIsOpen={()=> setIsModalOpen} />
-            </Modal>
-
-            <Modal isOpen={isAcceptionModalOpen} onClose={() => setIsAcceptionModalOpen(false)} title="Вы уверены?">
-                <Acception onConfirm={onDelete} onCancel={() => setIsAcceptionModalOpen(false)}/>
-            </Modal>
-
-            <div className={`${className} `}>
-                <div className="ml-auto space-y-1 p-2 bg-black/75 border-border border-[1px] rounded-md flex flex-col ">
-                    {selectedRows?.length === 1 && <Button className="text-xs " onClick={openChangeModal}><Edit className="scale-[75%]"/></Button>}
-                    <Button onClick={OpenAcceptionModal} className="text-xs"><Trash2 className="scale-[75%]"/></Button>
-                </div>
-            </div>
-        </>
-    )
-}

@@ -11,8 +11,9 @@ export function getPreloadPath() {
 }
 
 export function getIconPath() {
-    return path.join(
-        app.getAppPath(),
-        isDev() ? 'src/electron/assets/x.ico' : 'dist-electron/x.ico'
-    )
+  if (isDev()) {
+    return path.join(app.getAppPath(), 'src/electron/assets/x.ico');
+  } else {
+    return path.join(process.resourcesPath, 'x.ico');
+  }
 }

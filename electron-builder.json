@@ -1,11 +1,22 @@
 {
     "appId": "com.zxsakurai.accmanager",
-    "files": ["dist-electron", "dist-react"],
+    "files": [
+        "dist-react/**/*",
+        "dist-electron/**/*"
+    ],
     "extraResources": [
         "dist-electron/preload.cjs",
         {
             "from": "src/electron/assets/x.ico",
             "to": "dist-electron/x.ico"
+        },
+        {
+            "from": "public/icon.png",  
+            "to": "dist-react/icon.png" 
+        },
+        {
+            "from": "postgres-bin",
+            "to": "postgres-bin"
         }
     ],
     "linux": {
@@ -14,7 +25,7 @@
     },
     "win": {
         "target": ["portable", "nsis"],
-        "icon": "src/electron/assets/x.ico"
+        "icon": "public/x.ico"
     },
     "nsis": {
         "oneClick": false,

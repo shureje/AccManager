@@ -1,4 +1,4 @@
-import type { Ref, RefObject } from "react";
+import type { Ref } from "react";
 
 
 
@@ -6,12 +6,13 @@ interface ContainerProps {
     children?: React.ReactNode;
     className?: string;
     ref?: Ref<HTMLDivElement>;
+    style?: React.CSSProperties;
 }
 
-export default function Container({children, className, ref}: ContainerProps) {
+export default function Container({children, className, ref, style}: ContainerProps) {
     return(
         <>
-        <div ref={ref} className={`${className} `}>
+        <div style={style} ref={ref} className={`${className} `}>
             {children}
         </div>
         </>

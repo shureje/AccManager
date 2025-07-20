@@ -14,7 +14,9 @@
   --color-secondary: oklch(1 0.0148 248);
   --color-header: oklch(8.467% 0.00001 271.152 / 0.75);
   --color-border: oklch(1 0.0148 248 / 0.25);
-  --color-table-border: oklch(1 0.0148 248 / 0.25);
+  --color-table-first-color: oklch(4% 0.00001 271.152);
+  --color-table-seccond-color: oklch(20% 0.00002 271.152);
+  --color-table-border: oklch(52.431% 0.00006 271.152);
   --color-background: oklch(4% 0.00001 271.152);
   --color-muted-background: oklch(24% 0.00001 271.152);
  
@@ -26,6 +28,8 @@
   --background: var(--color-background);
   --muted-background: var(--color-muted-background);
   --table-border: var(--color-table-border);
+  --table-first-color: var(--color-table-first-color);
+  --table-seccond-color: var(--color-table-seccond-color);
 
   color: var(--secondary);
   background-color: var(--primary);
